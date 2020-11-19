@@ -79,19 +79,22 @@ class Content(Resource):
         return {'message': 'Content deleted'}
 
 
-@jwt_required
-@role_required("admin")
+
 class ContentList(Resource):
+    @jwt_required
+    @role_required("admin")
     def get(self):
         return {'contents': list(map(lambda x: x.json(), ContentModel.query.all()))}
 
-@jwt_required
+
 class ContentByInterests(Resource):
+    @jwt_required
     def get(self, key):
         return {'contents': InterestModel.find_by_keyword(key).json_contents()}
 
-@jwt_required
+
 class ContentFile(Resource):
+    @jwt_required
     def post(self):
 
         file = request.files["file"]

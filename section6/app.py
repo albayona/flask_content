@@ -105,9 +105,9 @@ def protected():
     return jsonify(ret), 200
 
 api.add_resource(Content, '/content/<string:id>', '/content')
-api.add_resource(ContentList, '/contents')
-api.add_resource(ContentByInterests, '/interests/<string:key>')
-api.add_resource(ContentFile, '/upload')
+# api.add_resource(ContentList, '/contents')
+# api.add_resource(ContentByInterests, '/interests/<string:key>')
+# api.add_resource(ContentFile, '/upload')
 api.add_resource(UserRegister, '/register')
 api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout')
