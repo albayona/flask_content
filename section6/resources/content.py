@@ -1,7 +1,7 @@
 from flask_jwt_extended import jwt_required
 from flask_restful import Resource, reqparse
 
-from flask import current_app as app
+from flask import current_app as app, request
 from werkzeug.utils import secure_filename
 
 import s3config
@@ -130,5 +130,7 @@ class ContentList(Resource):
     # decorators = [getLimiter.limit("2 per minute")]
 
     decorators = [limiter.limit("2/10seconds")]
+    @jwt_required
+    @role_required("admin")
     def get(self):
         return {'contents': list(map(lambda x: x.json(), ContentModel.query.all()))}
