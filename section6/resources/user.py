@@ -15,7 +15,7 @@ class UserRegister(Resource):
                         required=True,
                         help="This field cannot be blank."
                         )
-    parser.add_argument('role',
+    parser.add_argument('type',
                         type=str,
                         required=True,
                         help="This field cannot be blank."
@@ -27,7 +27,7 @@ class UserRegister(Resource):
         if UserModel.find_by_username(data['username']):
             return {"message": "A user with that username already exists"}, 400
 
-        user = UserModel(data['username'], data['password'], data['role'])
+        user = UserModel(data['username'], data['password'], data['type'])
         user.save_to_db()
 
         return {"message": "User created successfully."}, 201
