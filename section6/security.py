@@ -1,8 +1,8 @@
 from flask import request, jsonify
-from flask_jwt_extended import create_access_token, get_jwt_claims
+from flask_jwt_extended import create_access_token, get_jwt_claims, create_refresh_token, jwt_required, get_raw_jwt, \
+    jwt_refresh_token_required, get_jwt_identity
 
-
-
+from blacklist import BLACKLIST
 from models.user import UserModel
 from functools import update_wrapper
 from flask_restful import abort, Resource, reqparse
@@ -32,6 +32,7 @@ def role_required(role):
     return decorator
 
 
+
 class Login(Resource):
     parser = reqparse.RequestParser()
 
@@ -39,20 +40,35 @@ class Login(Resource):
     parser.add_argument('password', type=str, required=True, help="This field cannot be blank")
     parser.add_argument('type', type=str, required=True, help="This field cannot be blank")
 
+
+
     def post(self):
         data = Login.parser.parse_args()
 
-        user = authenticate(data["username"], data["password"])
+        user = UserModel.find_by_username(data['username'])
 
-        if not user:
-            return jsonify({"msg": "Bad username or password"}), 401
+        if user and safe_str_cmp(user.password, data['password']):
+            access_token = create_access_token(identity=user, fresh=True)
+            refresh_token = create_refresh_token(user)
+            return {
+                       'access_token': access_token,
+                       'refresh_token': refresh_token
+                   }, 200
 
-        # We can now pass this complex object directly to the
-        # create_access_token method. This will allow us to access
-        # the properties of this object in the user_claims_loader
-        # function, and get the identity of this object from the
-        # user_identity_loader function.
-        access_token = create_access_token(identity=user)
-        ret = {'access_token': access_token}
-        return ret, 200
+        return {"message": "Invalid Credentials!"}, 401
 
+
+class Logout(Resource):
+    @jwt_required
+    def post(self):
+        jti = get_raw_jwt()['jti']
+        BLACKLIST.add(jti)
+        return {"message": "Successfully logged out"}, 200
+
+
+class TokenRefresh(Resource):
+    @jwt_refresh_token_required
+    def post(self):
+        current_user = get_jwt_identity()
+        new_token = create_access_token(identity=current_user, fresh=False)
+        return {'access_token': new_token}, 200

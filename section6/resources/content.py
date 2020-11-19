@@ -1,10 +1,12 @@
 from flask import request
+from flask_jwt_extended import jwt_required
 from flask_restful import Resource, reqparse
 from werkzeug.utils import secure_filename
 
 import s3config
 from s3helpers import upload_file_to_s3
 from models.content import ContentModel, InterestModel
+from security import role_required
 
 
 class Content(Resource):
@@ -20,12 +22,14 @@ class Content(Resource):
     parser.add_argument('documentURL', type=str, required=True, help="This field cannot be blank")
     parser.add_argument('interests', type=list, location='json', required=True, help="This field cannot be blank")
 
+    @jwt_required
     def get(self, id):
         content = ContentModel.find_by_id(id)
         if content:
             return content.json()
         return {'message': 'Content not found'}, 404
 
+    @jwt_required
     def post(self):
 
 
@@ -65,6 +69,8 @@ class Content(Resource):
 
         return {"message": "Content created successfully."}, 201
 
+    @jwt_required
+    @role_required("admin")
     def delete(self, id):
         store = ContentModel.find_by_id(id)
         if store:
@@ -73,16 +79,18 @@ class Content(Resource):
         return {'message': 'Content deleted'}
 
 
+@jwt_required
+@role_required("admin")
 class ContentList(Resource):
     def get(self):
         return {'contents': list(map(lambda x: x.json(), ContentModel.query.all()))}
 
-
+@jwt_required
 class ContentByInterests(Resource):
     def get(self, key):
         return {'contents': InterestModel.find_by_keyword(key).json_contents()}
 
-
+@jwt_required
 class ContentFile(Resource):
     def post(self):
 
