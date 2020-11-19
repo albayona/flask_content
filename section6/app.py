@@ -6,10 +6,10 @@ from flask_jwt_extended import (
 )
 
 from blacklist import BLACKLIST
-from resources.content import ContentByInterests, Content, ContentList, ContentFile
 from security import authenticate, identity, Login, role_required, Logout, TokenRefresh
 from resources.user import UserRegister
-
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
@@ -17,7 +17,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.secret_key = 'jose'
 api = Api(app)
+app.app_context().push()
 
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"]
+)
 
 
 
@@ -104,17 +110,24 @@ def protected():
     }
     return jsonify(ret), 200
 
+
+
+from resources.content import ContentList, Content, ContentByInterests, ContentFile
+
 api.add_resource(Content, '/content/<string:id>', '/content')
-# api.add_resource(ContentList, '/contents')
-# api.add_resource(ContentByInterests, '/interests/<string:key>')
-# api.add_resource(ContentFile, '/upload')
+api.add_resource(ContentList, '/contents')
+api.add_resource(ContentByInterests, '/interests/<string:key>')
+api.add_resource(ContentFile, '/upload')
 api.add_resource(UserRegister, '/register')
 api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout')
 api.add_resource(TokenRefresh, '/refresh')
 
+
+
 if __name__ == '__main__':
     from db import db
     db.init_app(app)
     app.run(port=8080, debug=True)
+
 

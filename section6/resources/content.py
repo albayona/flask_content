@@ -1,12 +1,25 @@
-from flask import request
 from flask_jwt_extended import jwt_required
 from flask_restful import Resource, reqparse
+
+from flask import current_app as app
 from werkzeug.utils import secure_filename
 
 import s3config
-from s3helpers import upload_file_to_s3
 from models.content import ContentModel, InterestModel
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
+from s3helpers import upload_file_to_s3
 from security import role_required
+
+with app.app_context():
+    limiter = Limiter(
+        app,
+        key_func=get_remote_address,
+        default_limits=["200 per day", "50 per hour"]
+    )
+
+
 
 
 class Content(Resource):
@@ -69,6 +82,7 @@ class Content(Resource):
 
         return {"message": "Content created successfully."}, 201
 
+
     @jwt_required
     @role_required("admin")
     def delete(self, id):
@@ -80,14 +94,10 @@ class Content(Resource):
 
 
 
-class ContentList(Resource):
-    @jwt_required
-    @role_required("admin")
-    def get(self):
-        return {'contents': list(map(lambda x: x.json(), ContentModel.query.all()))}
 
 
 class ContentByInterests(Resource):
+    decorators = [limiter.limit("2/10seconds")]
     @jwt_required
     def get(self, key):
         return {'contents': InterestModel.find_by_keyword(key).json_contents()}
@@ -106,3 +116,19 @@ class ContentFile(Resource):
             return {"message": "File is not valid"}, 400
 
         return {"url": output}, 200
+
+
+class ContentList(Resource):
+
+
+
+    # @inject
+    # def getLimiter(service: LimiterService):
+    #     print(f"MyService instance is {service}")  # We want to see the object that gets created
+    #     return service.get_data()
+    #
+    # decorators = [getLimiter.limit("2 per minute")]
+
+    decorators = [limiter.limit("2/10seconds")]
+    def get(self):
+        return {'contents': list(map(lambda x: x.json(), ContentModel.query.all()))}
