@@ -24,4 +24,6 @@ class UserParser:
     parser.add_argument('description', type=str, required=False)
     parser.add_argument('picture', type=str, required=False)
     parser.add_argument('code', type=int, required=True, help="Must have a code.")
+    parser.add_argument('role', type=str, required=True, help="Must have a role.")
+
 

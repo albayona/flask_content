@@ -35,14 +35,14 @@ class Content(Resource):
     parser.add_argument('documentURL', type=str, required=True, help="This field cannot be blank")
     parser.add_argument('interests', type=list, location='json', required=True, help="This field cannot be blank")
 
-    #@jwt_requiredTODO
+    @jwt_required
     def get(self, id):
         content = ContentModel.find_by_id(id)
         if content:
             return content.json()
         return {'message': 'Content not found'}, 404
 
-    #@jwt_required #TODO
+    @jwt_required
     def post(self):
 
 
@@ -130,7 +130,7 @@ class ContentList(Resource):
     # decorators = [getLimiter.limit("2 per minute")]
 
     decorators = [limiter.limit("2/10seconds")]
-    #@jwt_required #TODO
-    #@role_required("admin")#TODO
+    @jwt_required
+    @role_required("admin")
     def get(self):
         return {'contents': list(map(lambda x: x.json(), ContentModel.query.all()))}

@@ -7,7 +7,9 @@ from flask_limiter.util import get_remote_address
 from flask_restful import Api
 
 from blacklist import BLACKLIST
+from resources.admin import AdminUsername, AdminCode, AdminsList, AdminRegister
 from resources.booklist import BookListRegContent, BooklistRegister, BooklistContentList
+from resources.professor import ProfessorRegister
 
 from resources.student import StudentRegister, StudentCode, StudentsList, StudentBooklistsList, \
     StudentBooklist, StudentRegBooklist
@@ -37,7 +39,7 @@ jwt = JWTManager(app)  # /auth
 
 @jwt.user_claims_loader
 def add_claims_to_access_token(user):
-    return user.type
+    return user.role #TODO: figure this out
 
 
 @jwt.user_identity_loader
@@ -104,7 +106,6 @@ def create_tables():
 
 @app.route('/protected', methods=['GET'])
 @jwt_required
-@role_required("f")
 def protected():
     ret = {
         'current_identity': get_jwt_identity(),
@@ -126,7 +127,6 @@ api.add_resource(BookListRegContent, '/booklists/<string:name>/')
 api.add_resource(BooklistRegister, '/booklists/')
 api.add_resource(BooklistContentList, '/booklists/<string:name>/contents/')
 
-
 api.add_resource(StudentRegister, '/students/')
 api.add_resource(StudentCode, '/students/<int:code>')
 api.add_resource(StudentsList, '/studentslist/')
@@ -134,6 +134,13 @@ api.add_resource(StudentBooklistsList, '/students/<int:code>/booklists/')
 api.add_resource(StudentBooklist, '/students/<int:code>/booklists/<string:name>')
 api.add_resource(StudentRegBooklist, '/students/<int:code>/booklists/')
 
+api.add_resource(AdminUsername, '/admins/<string:username>')
+api.add_resource(AdminCode, '/admins/<int:code>')
+api.add_resource(AdminsList, '/adminlist/')
+api.add_resource(AdminRegister, '/admins/')
+
+
+api.add_resource(ProfessorRegister, '/professors/')
 
 if __name__ == '__main__':
     from db import db

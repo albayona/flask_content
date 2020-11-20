@@ -17,10 +17,13 @@ class UserModel(db.Model):
     __tablename__ = 'booklick_user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100))
+    password = db.Column(db.String(100))
     email = db.Column(db.String(100))
     code = db.Column(db.Integer)
     booklists = db.relationship("BooklistModel")
     type = db.Column(db.String(100))
+
+    role = db.Column(db.String(100))
 
     __mapper_args__ = {
         'polymorphic_identity': 'booklick_user',
@@ -55,6 +58,79 @@ class UserModel(db.Model):
         db.session.commit()
 
 
+class AdminModel(UserModel):
+    _tablename_ = 'admin'
+    id = db.Column(db.Integer, db.ForeignKey('booklick_user.id'), primary_key=True)
+    first_name = db.Column(db.String(100))
+    last_name = db.Column(db.String(100))
+    description = db.Column(db.String(100))
+    picture = db.Column(db.String(100))
+
+    _mapper_args_ = {
+        'polymorphic_identity': 'admin',
+    }
+
+    def _init_(self, username: str, email: str, code: int, first_name: str, last_name: str,
+               password: str, description: str, picture: str, role:str):
+        self.username = username
+        self.email = email
+        self.code = code
+        self.first_name = first_name
+        self.last_name = last_name
+        self.password = password
+        self.description = description
+        self.picture = picture
+        self.role = role
+
+    def json(self):
+        return {'first_name': self.first_name, 'last_name': self.last_name,
+                'username': self.username, 'email': self.email, 'code': self.code,
+                'password': self.password, 'description': self.description, 'picture': self.picture}
+
+
+class ProfessorModel(UserModel):
+    professor_courses_table = db.Table('professor_courses', db.Model.metadata,
+                                       db.Column('professor_id', db.Integer,
+                                                 db.ForeignKey('professor.id')),
+                                       db.Column('course_id', db.Integer,
+                                                 db.ForeignKey('course.id'))
+                                       )
+
+    __tablename__ = 'professor'
+    id = db.Column(db.Integer, db.ForeignKey('booklick_user.id'), primary_key=True)
+    first_name = db.Column(db.String(100))
+    last_name = db.Column(db.String(100))
+    description = db.Column(db.String(500))
+    picture = db.Column(db.String(100))
+
+    courses = db.relationship("CourseModel",
+                              secondary=professor_courses_table,
+                              backref=db.backref('professors', lazy=True))
+
+    _mapper_args_ = {
+        'polymorphic_identity': 'professor',
+    }
+
+    def _init_(self, username: str, email: str, code: int, first_name: str, last_name: str,
+               password: str, description: str, picture: str, role:str):
+        self.username = username
+        self.email = email
+        self.code = code
+        self.first_name = first_name
+        self.last_name = last_name
+        self.password = password
+        self.description = description
+        self.picture = picture
+        self.role = role
+
+
+
+    def json(self):
+        return {'first_name': self.first_name, 'last_name': self.last_name,
+                'username': self.username, 'email': self.email, 'code': self.code,
+                'password': self.password, 'description': self.description, 'picture': self.picture}
+
+
 class StudentModel(UserModel):
     student_courses_table = db.Table('student_courses', db.Model.metadata,
                                      db.Column('student_id', db.Integer,
@@ -72,7 +148,6 @@ class StudentModel(UserModel):
     id = db.Column(db.Integer, db.ForeignKey('booklick_user.id'), primary_key=True)
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
-    password = db.Column(db.String(100))
     description = db.Column(db.String(500))
     picture = db.Column(db.String(100))
     semester = db.Column(db.Integer)
@@ -89,7 +164,7 @@ class StudentModel(UserModel):
     }
 
     def __init__(self, username: str, email: str, code: int, first_name: str, last_name: str,
-                 password: str, description: str, picture: str, semester: int):
+                 password: str, description: str, picture: str, semester: int, role:str):
         self.username = username
         self.email = email
         self.code = code
@@ -99,80 +174,11 @@ class StudentModel(UserModel):
         self.description = description
         self.picture = picture
         self.semester = semester
+        self.role = role
+
 
     def json(self):
         return {'first_name': self.first_name, 'last_name': self.last_name,
                 'username': self.username, 'email': self.email, 'code': self.code,
                 'password': self.password, 'description': self.description,
                 'picture': self.picture, 'semester': self.semester}
-
-
-class ProfessorModel(UserModel):
-    professor_courses_table = db.Table('professor_courses', db.Model.metadata,
-                                       db.Column('professor_id', db.Integer,
-                                                 db.ForeignKey('professor.id')),
-                                       db.Column('course_id', db.Integer,
-                                                 db.ForeignKey('course.id'))
-                                       )
-
-    __tablename__ = 'professor'
-    id = db.Column(db.Integer, db.ForeignKey('booklick_user.id'), primary_key=True)
-    first_name = db.Column(db.String(100))
-    last_name = db.Column(db.String(100))
-    password = db.Column(db.String(100))
-    description = db.Column(db.String(500))
-    picture = db.Column(db.String(100))
-
-    courses = db.relationship("CourseModel",
-                              secondary=professor_courses_table,
-                              backref=db.backref('professors', lazy=True))
-
-    _mapper_args_ = {
-        'polymorphic_identity': 'professor',
-    }
-
-    def _init_(self, username: str, email: str, code: int, first_name: str, last_name: str,
-               password: str, description: str, picture: str):
-        self.username = username
-        self.email = email
-        self.code = code
-        self.first_name = first_name
-        self.last_name = last_name
-        self.password = password
-        self.description = description
-        self.picture = picture
-
-    def json(self):
-        return {'first_name': self.first_name, 'last_name': self.last_name,
-                'username': self.username, 'email': self.email, 'code': self.code,
-                'password': self.password, 'description': self.description, 'picture': self.picture}
-
-
-class AdminModel(UserModel):
-    _tablename_ = 'admin'
-    id = db.Column(db.Integer, db.ForeignKey('booklick_user.id'), primary_key=True)
-    first_name = db.Column(db.String(100))
-    last_name = db.Column(db.String(100))
-    password = db.Column(db.String(100))
-    description = db.Column(db.String(100))
-    picture = db.Column(db.String(100))
-
-    _mapper_args_ = {
-        'polymorphic_identity': 'admin',
-    }
-
-    def _init_(self, username: str, email: str, code: int, first_name: str, last_name: str,
-               password: str, description: str, picture: str):
-        self.username = username
-        self.email = email
-        self.code = code
-        self.first_name = first_name
-        self.last_name = last_name
-        self.password = password
-        self.description = description
-        self.picture = picture
-
-    def json(self):
-        return {'first_name': self.first_name, 'last_name': self.last_name,
-                'username': self.username, 'email': self.email, 'code': self.code,
-                'password': self.password, 'description': self.description, 'picture': self.picture}
