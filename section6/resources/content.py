@@ -1,3 +1,4 @@
+from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
 from flask_restful import Resource, reqparse
 
@@ -37,6 +38,7 @@ class Content(Resource):
     parser.add_argument('documentURL', type=str, required=True, help="This field cannot be blank")
     parser.add_argument('interests', type=list, location='json', required=True, help="This field cannot be blank")
 
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @jwt_required
     def get(self, id):
         content = ContentModel.find_by_id(id)
@@ -44,6 +46,7 @@ class Content(Resource):
             return content.json()
         return {'message': 'Content not found'}, 404
 
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @jwt_required
     def post(self):
 
@@ -83,7 +86,7 @@ class Content(Resource):
 
         return {"message": "Content created successfully."}, 201
 
-
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @jwt_required
     @role_required("admin")
     def delete(self, id):
@@ -99,6 +102,8 @@ class Content(Resource):
 
 class ContentByInterests(Resource):
     decorators = [limiter.limit("5/10seconds")]
+
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @jwt_required
     def get(self, key):
         return {'contents': InterestModel.find_by_keyword(key).json_contents()}
@@ -107,6 +112,7 @@ class ContentByInterests(Resource):
 class ContentFile(Resource):
     decorators = [limiter.limit("5/10seconds")]
 
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @jwt_required
     @role_required("admin")
     def post(self):
@@ -136,6 +142,7 @@ class ContentList(Resource):
 
     decorators = [limiter.limit("5/10seconds")]
 
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @jwt_required
     @role_required("admin")
     def get(self):

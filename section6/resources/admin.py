@@ -1,5 +1,6 @@
 import copy
 
+from flask_cors import cross_origin
 from flask_restful import Resource, reqparse
 
 from models.booklist_model import BooklistModel
@@ -8,7 +9,7 @@ from resources.user_parser import UserParser
 
 
 class AdminRegister(Resource):
-
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     def post(self):
         data = UserParser.parser.parse_args()
 
@@ -31,7 +32,7 @@ class AdminRegister(Resource):
 
 
 class AdminCode(Resource):
-
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     def get(self, code: int):
         # only search admins
         admin = AdminModel.find_by_code(code)
@@ -39,6 +40,7 @@ class AdminCode(Resource):
             return admin.json(), 200
         return {'message': 'Admin not found.'}, 404
 
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     def put(self, code: int):
 
         # This parser will be used to update fields that can me modifiable
@@ -79,6 +81,7 @@ class AdminCode(Resource):
         admin.save_to_db()
         return admin.json(), 200
 
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     def delete(self, code: int):
         admin_to_delete = AdminModel.find_by_code(code)
         if admin_to_delete:
@@ -88,6 +91,7 @@ class AdminCode(Resource):
 
 
 class AdminBooklistsList(Resource):
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     def get(self, code):
         admin = AdminModel.find_by_code(code)
 
@@ -100,6 +104,7 @@ class AdminRegBooklist(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('name', type=str, required=True)
 
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     def post(self, code):
 
         name = AdminRegBooklist.parser.parse_args()['name']
@@ -123,6 +128,7 @@ class AdminRegBooklist(Resource):
 
 class AdminBooklist(Resource):
 
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     def delete(self, code: str, name: str):
         # if booklist and Admin exist, delete the booklist
         booklist = BooklistModel.find_by_name(name)
@@ -139,6 +145,7 @@ class AdminBooklist(Resource):
             return {"message": f"Admin {code} does not exist."}, 404
         return {"message": f"Booklist {booklist} does not exist."}, 404
 
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     def get(self, code: str, name: str):
         # if booklist and admin exist, delete the booklist
         booklist = BooklistModel.find_by_name(name)
@@ -156,6 +163,7 @@ class AdminBooklist(Resource):
 
 class AdminUsername(Resource):
 
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     def get(self, username: str):
         # only search admins
         admin = AdminModel.find_by_username(username)
@@ -165,5 +173,6 @@ class AdminUsername(Resource):
 
 
 class AdminsList(Resource):
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     def get(self):
         return {'admins': [admin.json() for admin in AdminModel.query.all()]}

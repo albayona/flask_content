@@ -1,14 +1,19 @@
 from flask import request, jsonify
+from flask_cors import CORS, cross_origin
 from flask_jwt_extended import create_access_token, get_jwt_claims, create_refresh_token, \
     jwt_required, get_raw_jwt, \
     jwt_refresh_token_required, get_jwt_identity
 
 from blacklist import BLACKLIST
 from functools import update_wrapper
-from flask_restful import abort, Resource, reqparse
+from flask_restful import Resource, reqparse
 from werkzeug.security import safe_str_cmp
 
 from models.user_model import UserModel
+from flask import current_app as app
+
+with app.app_context():
+    cors = CORS(app, resources={r"*": {"origins": "*"}})
 
 
 def authenticate(username, password):
@@ -54,6 +59,7 @@ class Login(Resource):
     parser.add_argument('username', type=str, required=True, help="This field cannot be blank")
     parser.add_argument('password', type=str, required=True, help="This field cannot be blank")
 
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     def post(self):
         data = Login.parser.parse_args()
 
@@ -71,6 +77,7 @@ class Login(Resource):
 
 
 class Logout(Resource):
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @jwt_required
     def post(self):
         jti = get_raw_jwt()['jti']
@@ -79,6 +86,7 @@ class Logout(Resource):
 
 
 class TokenRefresh(Resource):
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @jwt_refresh_token_required
     def post(self):
         current_user = get_jwt_identity()

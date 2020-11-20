@@ -1,5 +1,6 @@
 import copy
 
+from flask_cors import cross_origin
 from flask_jwt_extended import jwt_required
 from flask_restful import Resource, reqparse
 
@@ -13,6 +14,7 @@ class BooklistRegister(Resource): #TODO: change to create under user
     parser.add_argument('description', type=str, required=True, help="Must have a description.")
     parser.add_argument('imageURL', type=str, required=True, help="Must have an image.")
 
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @jwt_required
     def post(self):
         data = BooklistRegister.parser.parse_args()
@@ -27,6 +29,7 @@ class BooklistRegister(Resource): #TODO: change to create under user
 
 
 class BooklistName(Resource):
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @jwt_required
     def get(self, name: str):
         # only search booklists
@@ -35,6 +38,7 @@ class BooklistName(Resource):
             return booklist.json()
         return {'message': 'Booklist not found.'}, 404
 
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @jwt_required
     def put(self, name: str):
 
@@ -60,6 +64,7 @@ class BooklistName(Resource):
 
 class BookListRegContent(Resource):
 
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     def post(self, name):
         parser = reqparse.RequestParser()
         parser.add_argument('id', type=int, required=True, help="Must have an id.")
@@ -78,11 +83,13 @@ class BookListRegContent(Resource):
 
 
 class BooklistList(Resource):
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     def get(self):
         return {'booklists': [booklist.json() for booklist in BooklistModel.query.all()]}
 
 
 class BooklistContentList(Resource):
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     def get(self, name):
         booklist = BooklistModel.find_by_name(name)
 

@@ -7,13 +7,19 @@ from flask_limiter.util import get_remote_address
 from flask_restful import Api
 
 from blacklist import BLACKLIST
-from resources.admin import AdminUsername, AdminCode, AdminsList, AdminRegister
-from resources.booklist import BookListRegContent, BooklistRegister, BooklistContentList
-from resources.professor import ProfessorRegister
+from resources.admin import AdminUsername, AdminCode, AdminsList, AdminRegister, AdminRegBooklist, \
+    AdminBooklist, AdminBooklistsList
+from resources.booklist import BookListRegContent, BooklistRegister, BooklistContentList, \
+    BooklistName, BooklistList
+from resources.course import CourseRegister, CourseCode, CoursesList
+from resources.major import MajorRegister, MajorName, MajorsList
+from resources.professor import ProfessorRegister, ProfessorUsername, ProfessorCode, \
+    ProfessorCoursesList, ProfessorRegBooklist, ProfessorRegCourse, ProfessorDeleteCourse, \
+    ProfessorBooklist, ProfessorBooklistsList, ProfessorsList
 
 from resources.student import StudentRegister, StudentCode, StudentsList, StudentBooklistsList, \
-    StudentBooklist, StudentRegBooklist
-from security import Login, Logout, TokenRefresh
+    StudentBooklist, StudentRegBooklist, StudentRegCourse, StudentCoursesList, StudentDeleteCourse, \
+    StudentUsername, StudentMajorsList, StudentRegMajor, StudentDeleteMajor
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
@@ -115,6 +121,7 @@ def protected():
 
 
 from resources.content import ContentList, Content, ContentByInterests, ContentFile
+from security import Login, Logout, TokenRefresh
 
 api.add_resource(Content, '/content/<string:id>', '/content/')
 api.add_resource(ContentList, '/contents/')
@@ -123,6 +130,7 @@ api.add_resource(ContentFile, '/upload/')
 api.add_resource(Login, '/login/')
 api.add_resource(Logout, '/logout/')
 api.add_resource(TokenRefresh, '/refresh/')
+
 api.add_resource(BookListRegContent, '/booklists/<string:name>/')
 api.add_resource(BooklistRegister, '/booklists/')
 api.add_resource(BooklistContentList, '/booklists/<string:name>/contents/')
@@ -133,14 +141,39 @@ api.add_resource(StudentsList, '/studentslist/')
 api.add_resource(StudentBooklistsList, '/students/<int:code>/booklists/')
 api.add_resource(StudentBooklist, '/students/<int:code>/booklists/<string:name>')
 api.add_resource(StudentRegBooklist, '/students/<int:code>/booklists/')
+api.add_resource(StudentRegCourse, '/students/<int:code>/courses/')
+api.add_resource(StudentCoursesList, '/students/<int:code>/courses/')
+api.add_resource(StudentDeleteCourse, '/students/<int:code>/courses/<string:course_code>')
+
+api.add_resource(ProfessorUsername, '/professors/<string:username>')
+api.add_resource(ProfessorCode, '/professors/<int:code>')
+api.add_resource(ProfessorCoursesList, '/professors/<int:code>/courses/')
+api.add_resource(ProfessorRegBooklist, '/professors/<int:code>/booklists/')
+api.add_resource(ProfessorRegCourse, '/professors/<int:code>/courses/')
+api.add_resource(ProfessorDeleteCourse, '/professors/<int:code>/courses/<string:course_code>')
+api.add_resource(ProfessorBooklist, '/professors/<int:code>/booklists/<string:name>')
+api.add_resource(ProfessorBooklistsList, '/professors/<int:code>/booklists/')
+api.add_resource(ProfessorsList, '/professorslist/')
+api.add_resource(ProfessorRegister, '/professors/')
 
 api.add_resource(AdminUsername, '/admins/<string:username>')
 api.add_resource(AdminCode, '/admins/<int:code>')
 api.add_resource(AdminsList, '/adminlist/')
+api.add_resource(AdminRegBooklist, '/admins/<int:code>/booklists/')
+api.add_resource(AdminBooklist, '/admins/<int:code>/booklists/<string:name>')
+api.add_resource(AdminBooklistsList, '/admins/<int:code>/booklists/')
 api.add_resource(AdminRegister, '/admins/')
 
+api.add_resource(CourseRegister, '/courses/')
+api.add_resource(CourseCode, '/courses/<string:course_code>')
+api.add_resource(CoursesList, '/courseslist/')
 
-api.add_resource(ProfessorRegister, '/professors/')
+api.add_resource(MajorRegister, '/majors/')
+api.add_resource(MajorName, '/majors/<string:name>')
+api.add_resource(MajorsList, '/majorslist/')
+api.add_resource(BooklistName, '/booklists/<string:name>')
+api.add_resource(BooklistList, '/booklistslist/')
+
 
 if __name__ == '__main__':
     from db import db
