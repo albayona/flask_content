@@ -35,6 +35,19 @@ def role_required(role):
     return decorator
 
 
+def author_required(username):
+    def decorator(fn):
+        def wrapped_function(*args, **kwargs):
+            # For authorization er return status code 403
+            if not safe_str_cmp(get_jwt_claims(), username):
+                return {"msg": "You do not meet the roles required for this operation"}, 403
+            return fn(*args, **kwargs)
+
+        return update_wrapper(wrapped_function, fn)
+
+    return decorator
+
+
 class Login(Resource):
     parser = reqparse.RequestParser()
 

@@ -13,7 +13,7 @@ from resources.professor import ProfessorRegister
 
 from resources.student import StudentRegister, StudentCode, StudentsList, StudentBooklistsList, \
     StudentBooklist, StudentRegBooklist
-from security import Login, role_required, Logout, TokenRefresh
+from security import Login, Logout, TokenRefresh
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'

@@ -45,7 +45,6 @@ class Content(Resource):
     @jwt_required
     def post(self):
 
-
         data = Content.parser.parse_args()
         content = ContentModel(
             0,
@@ -104,7 +103,9 @@ class ContentByInterests(Resource):
 
 
 class ContentFile(Resource):
+
     @jwt_required
+    @role_required("admin")
     def post(self):
 
         file = request.files["file"]
@@ -130,6 +131,7 @@ class ContentList(Resource):
     # decorators = [getLimiter.limit("2 per minute")]
 
     decorators = [limiter.limit("2/10seconds")]
+
     @jwt_required
     @role_required("admin")
     def get(self):

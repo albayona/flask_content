@@ -1,17 +1,19 @@
 import copy
 
+from flask_jwt_extended import jwt_required
 from flask_restful import Resource, reqparse
 
 from models.booklist_model import BooklistModel
 from models.content_model import ContentModel
 
 
-class BooklistRegister(Resource):
+class BooklistRegister(Resource): #TODO: change to create under user
     parser = reqparse.RequestParser()
     parser.add_argument('name', type=str, required=True, help="Must have a name.")
     parser.add_argument('description', type=str, required=True, help="Must have a description.")
     parser.add_argument('imageURL', type=str, required=True, help="Must have an image.")
 
+    @jwt_required
     def post(self):
         data = BooklistRegister.parser.parse_args()
 
@@ -25,7 +27,7 @@ class BooklistRegister(Resource):
 
 
 class BooklistName(Resource):
-
+    @jwt_required
     def get(self, name: str):
         # only search booklists
         booklist = BooklistModel.find_by_name(name)
@@ -33,6 +35,7 @@ class BooklistName(Resource):
             return booklist.json()
         return {'message': 'Booklist not found.'}, 404
 
+    @jwt_required
     def put(self, name: str):
 
         data = BooklistRegister.parser.parse_args()

@@ -20,13 +20,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fe6fb8cd-021c-44dc-96f2-c0131c481669" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/resources/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data.db" beforeDir="false" afterPath="$PROJECT_DIR$/data.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/user_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/user_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/booklist.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/booklist.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/content.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/content.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/user_parser.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/user_parser.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/student.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/student.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/security.py" beforeDir="false" afterPath="$PROJECT_DIR$/security.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

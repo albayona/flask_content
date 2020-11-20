@@ -1,3 +1,4 @@
+from flask_jwt_extended import jwt_required
 from flask_restful import Resource, reqparse
 from flask import jsonify
 
@@ -262,6 +263,8 @@ class StudentsList(Resource):
 
 
 class StudentCoursesList(Resource):
+
+    @jwt_required
     def get(self, code):
         student = StudentModel.find_by_code(code)
 
@@ -271,6 +274,8 @@ class StudentCoursesList(Resource):
 
 
 class StudentMajorsList(Resource):
+
+    @jwt_required
     def get(self, code):
         student = StudentModel.find_by_code(code)
 
@@ -280,6 +285,8 @@ class StudentMajorsList(Resource):
 
 
 class StudentBooklistsList(Resource):
+
+    @jwt_required
     def get(self, code):
         student = StudentModel.find_by_code(code)
 
