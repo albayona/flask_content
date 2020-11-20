@@ -3,10 +3,12 @@ from flask_jwt_extended import create_access_token, get_jwt_claims, create_refre
     jwt_refresh_token_required, get_jwt_identity
 
 from blacklist import BLACKLIST
-from models.user import UserModel
 from functools import update_wrapper
 from flask_restful import abort, Resource, reqparse
 from werkzeug.security import safe_str_cmp
+
+from models.user_model import UserModel
+
 
 def authenticate(username, password):
     user = UserModel.find_by_username(username)

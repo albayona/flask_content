@@ -5,7 +5,7 @@ from flask import current_app as app, request
 from werkzeug.utils import secure_filename
 
 import s3config
-from models.content import ContentModel, InterestModel
+from models.content_model import ContentModel, InterestModel
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 

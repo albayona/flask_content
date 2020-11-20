@@ -16,6 +16,8 @@ class BooklistModel(db.Model):
     contents = db.relationship(
         "ContentModel", secondary=association_table)
 
+    user_id = db.Column(db.Integer, db.ForeignKey('booklick_user.id'))
+
     def __init__(self, name, description, imageURL):
         self.name = name
         self.description = description

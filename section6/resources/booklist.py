@@ -2,8 +2,8 @@ import copy
 
 from flask_restful import Resource, reqparse
 
-from models.booklist import BooklistModel
-from models.content import ContentModel
+from models.booklist_model import BooklistModel
+from models.content_model import ContentModel
 
 
 class BooklistRegister(Resource):

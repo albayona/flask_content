@@ -8,7 +8,9 @@ from flask_restful import Api
 
 from blacklist import BLACKLIST
 from resources.booklist import BookListRegContent, BooklistRegister, BooklistContentList
-from resources.user import UserRegister
+
+from resources.student import StudentRegister, StudentCode, StudentsList, StudentBooklistsList, \
+    StudentBooklist, StudentRegBooklist
 from security import Login, role_required, Logout, TokenRefresh
 
 app = Flask(__name__)
@@ -117,13 +119,21 @@ api.add_resource(Content, '/content/<string:id>', '/content/')
 api.add_resource(ContentList, '/contents/')
 api.add_resource(ContentByInterests, '/interests/<string:key>')
 api.add_resource(ContentFile, '/upload/')
-api.add_resource(UserRegister, '/register/')
 api.add_resource(Login, '/login/')
 api.add_resource(Logout, '/logout/')
 api.add_resource(TokenRefresh, '/refresh/')
 api.add_resource(BookListRegContent, '/booklists/<string:name>/')
 api.add_resource(BooklistRegister, '/booklists/')
 api.add_resource(BooklistContentList, '/booklists/<string:name>/contents/')
+
+
+api.add_resource(StudentRegister, '/students/')
+api.add_resource(StudentCode, '/students/<int:code>')
+api.add_resource(StudentsList, '/studentslist/')
+api.add_resource(StudentBooklistsList, '/students/<int:code>/booklists/')
+api.add_resource(StudentBooklist, '/students/<int:code>/booklists/<string:name>')
+api.add_resource(StudentRegBooklist, '/students/<int:code>/booklists/')
+
 
 if __name__ == '__main__':
     from db import db
