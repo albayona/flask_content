@@ -1,15 +1,15 @@
-from flask import Flask, request, jsonify
-from flask_restful import Api
+from flask import Flask, jsonify
 from flask_jwt_extended import (
-    JWTManager, jwt_required, create_access_token,
-    get_jwt_identity, get_jwt_claims, jwt_refresh_token_required, verify_fresh_jwt_in_request, current_user
+    JWTManager, jwt_required, get_jwt_identity, get_jwt_claims
 )
-
-from blacklist import BLACKLIST
-from security import authenticate, identity, Login, role_required, Logout, TokenRefresh
-from resources.user import UserRegister
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_restful import Api
+
+from blacklist import BLACKLIST
+from resources.booklist import BookListRegContent, BooklistRegister, BooklistContentList
+from resources.user import UserRegister
+from security import Login, role_required, Logout, TokenRefresh
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
@@ -25,24 +25,22 @@ limiter = Limiter(
     default_limits=["200 per day", "50 per hour"]
 )
 
-
-
-app.config['JWT_SECRET_KEY'] = 'jose'  # we can also use app.secret like before, Flask-JWT-Extended can recognize both
+app.config[
+    'JWT_SECRET_KEY'] = 'jose'  # we can also use app.secret like before, Flask-JWT-Extended can recognize both
 app.config['JWT_BLACKLIST_ENABLED'] = True  # enable blacklist feature
-app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']  # allow blacklisting for access and refresh tokens
+app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access',
+                                            'refresh']  # allow blacklisting for access and refresh tokens
 jwt = JWTManager(app)  # /auth
+
 
 @jwt.user_claims_loader
 def add_claims_to_access_token(user):
     return user.type
 
 
-
 @jwt.user_identity_loader
 def user_identity_lookup(user):
     return user.username
-
-
 
 
 # This method will check if a token is blacklisted, and will be called automatically when blacklist is enabled
@@ -62,7 +60,8 @@ def expired_token_callback():
 
 
 @jwt.invalid_token_loader
-def invalid_token_callback(error):  # we have to keep the argument here, since it's passed in by the caller internally
+def invalid_token_callback(
+        error):  # we have to keep the argument here, since it's passed in by the caller internally
     return jsonify({
         'message': 'Signature verification failed.',
         'error': 'invalid_token'
@@ -92,6 +91,7 @@ def revoked_token_callback():
         'error': 'token_revoked'
     }), 401
 
+
 # JWT configuration ends
 
 
@@ -111,23 +111,22 @@ def protected():
     return jsonify(ret), 200
 
 
-
 from resources.content import ContentList, Content, ContentByInterests, ContentFile
 
-api.add_resource(Content, '/content/<string:id>', '/content')
-api.add_resource(ContentList, '/contents')
+api.add_resource(Content, '/content/<string:id>', '/content/')
+api.add_resource(ContentList, '/contents/')
 api.add_resource(ContentByInterests, '/interests/<string:key>')
-api.add_resource(ContentFile, '/upload')
-api.add_resource(UserRegister, '/register')
-api.add_resource(Login, '/login')
-api.add_resource(Logout, '/logout')
-api.add_resource(TokenRefresh, '/refresh')
-
-
+api.add_resource(ContentFile, '/upload/')
+api.add_resource(UserRegister, '/register/')
+api.add_resource(Login, '/login/')
+api.add_resource(Logout, '/logout/')
+api.add_resource(TokenRefresh, '/refresh/')
+api.add_resource(BookListRegContent, '/booklists/<string:name>/')
+api.add_resource(BooklistRegister, '/booklists/')
+api.add_resource(BooklistContentList, '/booklists/<string:name>/contents/')
 
 if __name__ == '__main__':
     from db import db
+
     db.init_app(app)
-    app.run(port=8080, debug=True)
-
-
+    app.run(port=5000, debug=True)

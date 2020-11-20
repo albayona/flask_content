@@ -1,12 +1,12 @@
 from db import db
 
 
-association_table = db.Table('booklist_contents', db.Model.metadata,
-                             db.Column('booklists_id', db.Integer, db.ForeignKey('booklists.id')),
-                             db.Column('contents_id', db.Integer, db.ForeignKey('contents.id')),
-                             )
-
 class BooklistModel(db.Model):
+    association_table = db.Table('booklist_contents', db.Model.metadata,
+                                 db.Column('booklists_id', db.Integer,
+                                           db.ForeignKey('booklists.id')),
+                                 db.Column('contents_id', db.Integer, db.ForeignKey('contents.id')),
+                                 )
     __tablename__ = 'booklists'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -23,22 +23,19 @@ class BooklistModel(db.Model):
 
     def json(self):
         return {
-
-        'name' : self.name,
-        'description' : self.description,
-        'imageURL' : self.imageURL,
-        'contents': [content.json() for content in self.contents],
+            'name': self.name,
+            'description': self.description,
+            'imageURL': self.imageURL,
+            'contents': [content.json() for content in self.contents],
         }
 
     @classmethod
     def find_by_name(cls, name):
         return cls.query.filter_by(name=name).first()
 
-
     @classmethod
     def find_by_id(cls, id):
         return cls.query.filter_by(id=id).first()
-
 
     def save_to_db(self):
         db.session.add(self)
