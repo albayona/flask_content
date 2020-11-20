@@ -23,6 +23,8 @@ with app.app_context():
 
 
 class Content(Resource):
+    decorators = [limiter.limit("5/10seconds")]
+
     parser = reqparse.RequestParser()
 
     parser.add_argument('pages', type=int, required=True, help="This field cannot be blank")
@@ -96,13 +98,14 @@ class Content(Resource):
 
 
 class ContentByInterests(Resource):
-    decorators = [limiter.limit("2/10seconds")]
+    decorators = [limiter.limit("5/10seconds")]
     @jwt_required
     def get(self, key):
         return {'contents': InterestModel.find_by_keyword(key).json_contents()}
 
 
 class ContentFile(Resource):
+    decorators = [limiter.limit("5/10seconds")]
 
     @jwt_required
     @role_required("admin")
@@ -120,6 +123,7 @@ class ContentFile(Resource):
 
 
 class ContentList(Resource):
+    decorators = [limiter.limit("5/10seconds")]
 
 
 
@@ -130,7 +134,7 @@ class ContentList(Resource):
     #
     # decorators = [getLimiter.limit("2 per minute")]
 
-    decorators = [limiter.limit("2/10seconds")]
+    decorators = [limiter.limit("5/10seconds")]
 
     @jwt_required
     @role_required("admin")
