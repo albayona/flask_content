@@ -27,7 +27,6 @@ class BooklistRegister(Resource):
 class BooklistName(Resource):
 
     def get(self, name: str):
-        # only search booklists
         booklist = BooklistModel.find_by_name(name)
         if booklist:
             return booklist.json()
