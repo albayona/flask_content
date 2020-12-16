@@ -46,7 +46,7 @@ class BooklistName(Resource):
         booklist.save_to_db()
         return booklist.json(), 200
 
-    def delete(self, name: str):
+    def delete(self, name):
         booklist_to_delete = BooklistModel.find_by_name(name)
         if booklist_to_delete:
             booklist_to_delete.delete_from_db()
