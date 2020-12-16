@@ -16,12 +16,12 @@ class BooklistRegister(Resource):
         data = BooklistRegister.parser.parse_args()
 
         if BooklistModel.find_by_name(data['name']):
-            return {"message": f"booklist {data['name']} already exists."}, 200
+            return {"message": "booklist {data['name']} already exists."}, 200
 
         booklist = BooklistModel(**data)  # unpacking the dictionary
         booklist.save_to_db()
 
-        return {"message": f"Booklist was created successfully."}, 201
+        return {"message": "Booklist was created successfully."}, 201
 
 
 class BooklistName(Resource):
