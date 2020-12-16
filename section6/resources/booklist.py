@@ -26,13 +26,13 @@ class BooklistRegister(Resource):
 
 class BooklistName(Resource):
 
-    def get(self, name: str):
+    def get(self, name):
         booklist = BooklistModel.find_by_name(name)
         if booklist:
             return booklist.json()
         return {'message': 'Booklist not found.'}, 404
 
-    def put(self, name: str):
+    def put(self, name):
 
         data = BooklistRegister.parser.parse_args()
         booklist = BooklistModel.find_by_name(name)
