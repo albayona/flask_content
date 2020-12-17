@@ -130,5 +130,8 @@ api.add_resource(BooklistContentList, '/booklists/<string:name>/contents/')
 
 if __name__ == '__main__':
 
+    db.create_all()
     db.init_app(app)
-    app.run(port=5000, debug=True)
+
+    app.run(port=8080, debug=True)
+
