@@ -10,6 +10,7 @@ from blacklist import BLACKLIST
 from resources.booklist import BookListRegContent, BooklistRegister, BooklistContentList
 from resources.user import UserRegister
 from security import Login, role_required, Logout, TokenRefresh
+from db import db
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
