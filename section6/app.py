@@ -10,7 +10,7 @@ from blacklist import BLACKLIST
 from resources.booklist import BookListRegContent, BooklistRegister, BooklistContentList
 from resources.user import UserRegister
 from security import Login, role_required, Logout, TokenRefresh
-from db import db
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
@@ -20,6 +20,8 @@ app.secret_key = 'jose'
 api = Api(app)
 app.app_context().push()
 
+
+db = SQLAlchemy()
 limiter = Limiter(
     app,
     key_func=get_remote_address,
@@ -127,7 +129,6 @@ api.add_resource(BooklistRegister, '/booklists/')
 api.add_resource(BooklistContentList, '/booklists/<string:name>/contents/')
 
 if __name__ == '__main__':
-    from db import db
 
     db.init_app(app)
     app.run(port=5000, debug=True)
